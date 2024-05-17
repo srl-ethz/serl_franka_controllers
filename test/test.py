@@ -10,7 +10,7 @@ from scipy.spatial.transform import Rotation as R
 import os
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("robot_ip", None, "IP address of the robot.", required=True)
+flags.DEFINE_string("robot_ip", '172.16.0.4', "IP address of the robot.", required=True)
 flags.DEFINE_string("load_gripper", 'false', "Whether or not to load the gripper.")
 
 
