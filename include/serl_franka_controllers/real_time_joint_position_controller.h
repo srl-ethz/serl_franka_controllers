@@ -17,7 +17,7 @@
 
 namespace serl_franka_controllers {
 
-class JointPositionExampleController : public controller_interface::MultiInterfaceController<
+class RealTimeJointPositionController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::PositionJointInterface> {
  public:
   bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;

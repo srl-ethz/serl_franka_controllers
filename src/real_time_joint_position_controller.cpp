@@ -12,20 +12,20 @@
 
 namespace serl_franka_controllers {
 
-bool JointPositionExampleController::init(hardware_interface::RobotHW* robot_hardware,
+bool RealTimeJointPositionController::init(hardware_interface::RobotHW* robot_hardware,
                                           ros::NodeHandle& node_handle) {
   position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
   if (position_joint_interface_ == nullptr) {
     ROS_ERROR(
-        "JointPositionExampleController: Error getting position joint interface from hardware!");
+        "RealTimeJointPositionController: Error getting position joint interface from hardware!");
     return false;
   }
   std::vector<std::string> joint_names;
   if (!node_handle.getParam("joint_names", joint_names)) {
-    ROS_ERROR("JointPositionExampleController: Could not parse joint names");
+    ROS_ERROR("RealTimeJointPositionController: Could not parse joint names");
   }
   if (joint_names.size() != 7) {
-    ROS_ERROR_STREAM("JointPositionExampleController: Wrong number of joint names, got "
+    ROS_ERROR_STREAM("RealTimeJointPositionController: Wrong number of joint names, got "
                      << joint_names.size() << " instead of 7 names!");
     return false;
   }
@@ -35,7 +35,7 @@ bool JointPositionExampleController::init(hardware_interface::RobotHW* robot_har
       position_joint_handles_[i] = position_joint_interface_->getHandle(joint_names[i]);
     } catch (const hardware_interface::HardwareInterfaceException& e) {
       ROS_ERROR_STREAM(
-          "JointPositionExampleController: Exception getting joint handles: " << e.what());
+          "RealTimeJointPositionController: Exception getting joint handles: " << e.what());
       return false;
     }
   }
@@ -44,7 +44,7 @@ bool JointPositionExampleController::init(hardware_interface::RobotHW* robot_har
   for (size_t i = 0; i < q_start.size(); i++) {
     if (std::abs(position_joint_handles_[i].getPosition() - q_start[i]) > 0.1) {
       ROS_ERROR_STREAM(
-          "JointPositionExampleController: Robot is not in the expected starting position for "
+          "RealTimeJointPositionController: Robot is not in the expected starting position for "
           "running this example. Run `roslaunch franka_example_controllers move_to_start.launch "
           "robot_ip:=<robot-ip> load_gripper:=<has-attached-gripper>` first.");
       return false;
@@ -52,19 +52,19 @@ bool JointPositionExampleController::init(hardware_interface::RobotHW* robot_har
   }
 
   // Initialize the subscriber
-  joint_state_subscriber_ = node_handle.subscribe("/panda_commands", 1, &JointPositionExampleController::jointStateCallback, this);
+  joint_state_subscriber_ = node_handle.subscribe("/panda_commands", 1, &RealTimeJointPositionController::jointStateCallback, this);
 
   return true;
 }
 
-void JointPositionExampleController::starting(const ros::Time& /* time */) {
+void RealTimeJointPositionController::starting(const ros::Time& /* time */) {
   for (size_t i = 0; i < 7; ++i) {
     initial_pose_[i] = position_joint_handles_[i].getPosition();
   }
   elapsed_time_ = ros::Duration(0.0);
 }
 
-void JointPositionExampleController::update(const ros::Time& /*time*/,
+void RealTimeJointPositionController::update(const ros::Time& /*time*/,
                                             const ros::Duration& period) {
   elapsed_time_ += period;
 
@@ -75,19 +75,19 @@ void JointPositionExampleController::update(const ros::Time& /*time*/,
     }
   }
   else {
-    ROS_ERROR("JointPositionExampleController: Did not receive joint states");
+    ROS_ERROR("RealTimeJointPositionController: Did not receive joint states");
   }
 }
 
-void JointPositionExampleController::jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
+void RealTimeJointPositionController::jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
   if (msg->position.size() == 7) {
     current_joint_values_ = msg->position;
   } else {
-    ROS_ERROR("JointPositionExampleController: Received joint states with incorrect number of joints");
+    ROS_ERROR("RealTimeJointPositionController: Received joint states with incorrect number of joints");
   }
 }
 
 }  // namespace franka_example_controllers
 
-PLUGINLIB_EXPORT_CLASS(serl_franka_controllers::JointPositionExampleController,
+PLUGINLIB_EXPORT_CLASS(serl_franka_controllers::RealTimeJointPositionController,
                        controller_interface::ControllerBase)
