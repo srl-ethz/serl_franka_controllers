@@ -40,8 +40,22 @@ bool RealTimeJointPositionController::init(hardware_interface::RobotHW* robot_ha
     }
   }
 
-  std::array<double, 7> q_start{{0, 0, 0, -1.57, -1.57, 3.14, 0}};
-  for (size_t i = 0; i < q_start.size(); i++) {
+  // get start position from parameter server
+  std::vector<double> q_start;
+
+    if (!node_handle.getParam("/target_joint_positions", q_start)) {
+    ROS_ERROR("RealTimeJointPositionController: Could not retrieve starting joint positions");
+    return false;
+  }
+
+  if (q_start.size() != 7) {
+    ROS_ERROR_STREAM("RealTimeJointPositionController: Wrong number of starting joint positions, got "
+                      << q_start.size() << " instead of 7 values!");
+    return false;
+  }
+
+
+  for (size_t i = 0; i < q_start.size(); ++i) {
     if (std::abs(position_joint_handles_[i].getPosition() - q_start[i]) > 0.1) {
       ROS_ERROR_STREAM(
           "RealTimeJointPositionController: Robot is not in the expected starting position for "
