@@ -10,7 +10,7 @@ joint_position_controller:
         - panda_joint7
 
 real_time_joint_position_controller:
-    type: franka_example_controllers/RealTimeJointPositionController
+    type: serl_franka_controllers/RealTimeJointPositionController
     joint_names:
         - panda_joint1
         - panda_joint2
