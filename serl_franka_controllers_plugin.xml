@@ -1,4 +1,9 @@
 <library path="lib/libserl_franka_controllers">
+  <class name="serl_franka_controllers/RealTimeJointPositionController" type="serl_franka_controllers::RealTimeJointPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that executes real time commands.
+    </description>
+  </class>
   <class name="serl_franka_controllers/JointPositionController" type="serl_franka_controllers::JointPositionController" base_class_type="controller_interface::ControllerBase">
     <description>
       A controller that executes a short motion based on joint positions to demonstrate correct usage
