@@ -86,7 +86,9 @@ void RealTimeJointPositionController::update(const ros::Time& /*time*/,
   if (current_joint_values_.size() == 7) {
     for (size_t i = 0; i < 7; ++i) {
       position_joint_handles_[i].setCommand(current_joint_values_[i]);
+      std::cout << "Setting joint " << i << " to " << current_joint_values_[i] << std::endl;
     }
+    
   }
   else {
     ROS_ERROR("RealTimeJointPositionController: Did not receive joint states");
@@ -96,6 +98,7 @@ void RealTimeJointPositionController::update(const ros::Time& /*time*/,
 void RealTimeJointPositionController::jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
   if (msg->position.size() == 7) {
     current_joint_values_ = msg->position;
+    std::cout << "Received joint states" << std::endl;
   } else {
     ROS_ERROR("RealTimeJointPositionController: Received joint states with incorrect number of joints");
   }
